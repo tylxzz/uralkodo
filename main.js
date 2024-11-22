@@ -26,15 +26,27 @@ let uralkodok = [
         evszam2: '1711'
     },
 ]
-createTableStructure();
+const table = createHTMLElement('table', 'utable', document.body);
+createHTMLElementWithParentId('colgroup', 'ucolg', 'utable');
+createHTMLElementWithParentId('col', 'ucol1', 'ucolg');
+createHTMLElementWithParentId('col', 'ucol2', 'ucolg');
+createHTMLElementWithParentId('col', 'ucol3', 'ucolg');
+document.getElementById('ucol1').classList.add('colored-column');
+document.getElementById('ucol3').classList.add('colored-column');
+
+createHTMLElementWithParentId('thead', 'uthead', 'utable');
+createHTMLElementWithParentId('tr', 'utr', 'uthead');
+renderTableHeader();
+
+createHTMLElementWithParentId('tbody', 'utbody', 'utable');
+
 renderTable(uralkodok);
-createHeading()
+createHeading();
 generateForm();
 
 const form = document.getElementById('form');
 form.addEventListener('submit', function(e){
     const tbody = document.getElementById('utbody');
-    tbody.innerHTML = '';
     e.preventDefault();
     const uralkodo_nev = document.getElementById('uralkodo_nev');
     const esemeny1 = document.getElementById('esemeny1');
@@ -55,7 +67,7 @@ form.addEventListener('submit', function(e){
     
 
     if(validateFields(uralkodo_nev, esemeny1, evszam1, esemeny2, evszam2)){
-        const uralkodo1 = {
+        const newUralkodok = {
             uralkodo_nev: uralkodo_nevvalue,
             esemeny1: esemeny1value,
             evszam1: evszam1value,
@@ -63,10 +75,9 @@ form.addEventListener('submit', function(e){
             evszam2: evszam2value,
         };
 
-        uralkodok.push(uralkodo1);
-        renderTable(uralkodok);
+        uralkodok.push(newUralkodok)
+        clearErrors();
         form.reset();
+        renderTable(uralkodok);
     }
-
-
 })

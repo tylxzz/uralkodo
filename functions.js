@@ -10,8 +10,6 @@ function createHTMLElement(tag, id, parent) {
     const elem = document.createElement(tag);
     elem.id = id;
     parent.appendChild(elem);
-
-    return elem;
 }
 
 function createHTMLElementWithParentId(tag, id, parentid) {
@@ -36,23 +34,24 @@ function renderTableHeader() {
 
 function renderTable(uralkodok) {
     const tbody = document.getElementById('utbody');
-    tbody.innerHTML = "";
+    tbody.innerHTML = '';
     for(const uralkodo of uralkodok) {
         const row = document.createElement('tr');
+        tbody.appendChild(row);
         const td1 = document.createElement('td');
         const td2 = document.createElement('td');
         const td3 = document.createElement('td');
-
-        tbody.appendChild(row);
-        row.appendChild(td1);
-        row.appendChild(td2);
-        row.appendChild(td3);
 
         td1.innerHTML = uralkodo.uralkodo_nev;
         td2.innerHTML = uralkodo.esemeny1;
         td3.innerHTML = uralkodo.evszam1;
 
-        if(uralkodo.esemeny2 != undefined) {
+        row.appendChild(td1);
+        row.appendChild(td2);
+        row.appendChild(td3);
+
+
+        if(uralkodo.esemeny2 && uralkodo.evszam2) {
             td1.rowSpan = 2;
             const row1 = document.createElement('tr');
             tbody.appendChild(row1);
@@ -60,94 +59,60 @@ function renderTable(uralkodok) {
             const td4 = document.createElement('td');
             const td5 = document.createElement('td');
 
-            row1.appendChild(td4);
-            row1.appendChild(td5);
             td4.innerHTML = uralkodo.esemeny2;
             td5.innerHTML = uralkodo.evszam2;
+
+            row1.appendChild(td4);
+            row1.appendChild(td5);
         }
     }
-}
-
-function formElements(labelinput, labelinner) {
-    const form = document.getElementById('form');
-    const div = document.createElement('div');
-    const label = document.createElement('label');
-    label.htmlFor = labelinput;
-    label.innerText = labelinner;
-    const br = document.createElement('br');
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.id = labelinput;
-    input.name = labelinput;
-    const br1 = document.createElement('br');
-    const br2 = document.createElement('br');
-
-    const error = document.createElement('div');
-    error.classList.add('error');
-
-    div.appendChild(label);
-    div.appendChild(br);
-    div.appendChild(input);
-    div.appendChild(br1);
-    div.appendChild(error);
-    div.appendChild(br2);
-    form.appendChild(div);
 }
 
 function generateForm() {
     const form = document.createElement('form');
     form.id = 'form';
     document.body.appendChild(form);
+    
     const formvalues = [
-        {
-            label_for: "uralkodo_nev",
-            labelitext: 'Uralkodó neve:',
-            input_type: `text`,
-            input_id: "uralkodo_nev",
-            inputname: "uralkodo_nev",
-            divclass: ".error"
-        },
-        {
-            label_for: "esemeny1",
-            labelitext: 'Első esemény:',
-            input_type: `text`,
-            input_id: "esemeny1",
-            inputname: "esemeny1",
-            divclass: ".error"
-        },
-        {
-            label_for: "evszam1",
-            labelitext: 'Első esemény évszáma:',
-            input_type: `text`,
-            input_id: "evszam1",
-            inputname: "evszam1",
-            divclass: ".error"
-        },
-        {
-            label_for: "esemeny2",
-            labelitext: 'Második esemény:',
-            input_type: `text`,
-            input_id: "esemeny2",
-            inputname: "esemeny2",
-            divclass: ".error"
-        },
-        {
-            label_for: "evszam2",
-            labelitext: 'Második esemény évszáma:',
-            input_type: `text`,
-            input_id: "evszam2",
-            inputname: "evszam2",
-            divclass: ".error"
-        },
+        { id: 'uralkodo_nev', label: 'Uralkodó neve:' },
+        { id: 'esemeny1', label: 'Első esemény:' },
+        { id: 'evszam1', label: 'Első esemény évszáma:' },
+        { id: 'esemeny2', label: 'Második esemény:' },
+        { id: 'evszam2', label: 'Második esemény évszáma:' },
     ];
 
-    for(const formvalue of formvalues) {
-        formElements(formvalue.label_for, formvalue.labelitext);
+    for(const field of formvalues) {
+        const div = document.createElement('div');
+        const label = document.createElement('label');
+        label.htmlFor = field.id;
+        label.textContent = field.label;
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.id = field.id;
+        input.name = field.id;
+
+        const error = document.createElement('div');
+        error.className = 'error';
+
+        const br = document.createElement('br');
+        const br1 = document.createElement('br');
+        const br2 = document.createElement('br');
+        const br3 = document.createElement('br');
+
+        div.appendChild(br);
+        div.appendChild(label);
+        div.appendChild(br1);
+        div.appendChild(input);
+        div.appendChild(br2);
+        div.appendChild(error);
+        div.appendChild(br3);
+        form.appendChild(div);
     }
 
     const button = document.createElement('button');
-    button.innerText = 'Hozzáadás';
     button.type = 'submit';
+    button.textContent = 'Hozzáadás';
     form.appendChild(button);
 }
 
@@ -158,23 +123,25 @@ function validateFields(uralkodo_nev, esemeny1, evszam1, esemeny2, evszam2) {
         error.innerHTML = "";
     }
 
-    valid = validateElement(uralkodo_nev, 'Kötelező megadni az uralkodó nevét!');
-    valid = validateElement(esemeny1, 'Kötelező megadni az uralkodóhoz tartozó eseményt!');
-    valid = validateElement(evszam1, 'Kötelező megadni az eseményhez tartozó évszámot!');
+    valid = validateElement(uralkodo_nev, 'Kötelező megadni az uralkodó nevét!') && valid;
+    valid = validateElement(esemeny1, 'Kötelező megadni az uralkodóhoz tartozó eseményt!') && valid;
+    valid = validateElement(evszam1, 'Kötelező megadni az eseményhez tartozó évszámot!') && valid;
 
-    if(evszam2.value === "" && esemeny2.value !== ""){
+    if(evszam2.value === "" && esemeny2.value != ""){
         valid = false;
         const asd = evszam2.parentElement;
         const error = asd.querySelector(`.error`);
         error.innerHTML = `Adj meg az uralkodóhoz egy második évszámot is!`
     }
 
-    if(esemeny2.value === "" && evszam2.value !== ""){
+    if(esemeny2.value === "" && evszam2.value != ""){
         valid = false;
         const asd = esemeny2.parentElement;
         const error = asd.querySelector(`.error`);
         error.innerHTML = `Adj meg az uralkodóhoz egy második eseményt is!`
     }
+
+    return valid;
 }
 
 function validateElement(element, errorMessages){
@@ -189,29 +156,17 @@ function validateElement(element, errorMessages){
     }
 }
 
-function createTableStructure() {
-    const table = createHTMLElement('table', 'utable', document.body);
-
-    createHTMLElementWithParentId('colgroup', 'ucolg', 'utable');
-    createHTMLElementWithParentId('col', 'ucol1', 'ucolg');
-    createHTMLElementWithParentId('col', 'ucol2', 'ucolg');
-    createHTMLElementWithParentId('col', 'ucol3', 'ucolg');
-    document.getElementById('ucol1').classList.add('colored-column');
-    document.getElementById('ucol3').classList.add('colored-column');
-
-    createHTMLElementWithParentId('thead', 'uthead', 'utable');
-    createHTMLElementWithParentId('tr', 'utr', 'uthead');
-    renderTableHeader();
-
-    createHTMLElementWithParentId('tbody', 'utbody', 'utable');
-}
-
 function createHeading() {
     const heading = document.createElement('h2');
     heading.innerText = 'Uralkodó Hozzáadása';
     heading.id = 'form-heading';
 
-    // Táblázat után helyezzük el
     const table = document.getElementById('utable');
-    table.after(heading); // Az 'after' metódus elhelyezi az elem után
+    table.after(heading);
+}
+
+function clearErrors(){
+    const hibak = form.querySelectorAll(`.error`);
+    for(const hiba of hibak)
+        hiba.innerHTML = ``;
 }

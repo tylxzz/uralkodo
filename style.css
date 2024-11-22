@@ -3,15 +3,11 @@ table, tr, th, td {
     border: 1px solid black;
 }
 
-td:first-child, th:first-child {
-    background-color: blue;
-}
-
-td:last-child, th:last-child {
+.colored-column {
     background-color: green;
 }
 
 .error {
-    color: red;
-    text-shadow: 10px;
+    color: rgb(196, 20, 20);
+    text-shadow: 2px 2px 4px;
 }
